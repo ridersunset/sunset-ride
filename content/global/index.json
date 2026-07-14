@@ -8,6 +8,7 @@
       { "href": "/cars", "label": "The Collection" },
       { "href": "/experiences", "label": "Experiences" },
       { "href": "/weddings", "label": "Weddings" },
+      { "href": "/about", "label": "About us" },
       { "href": "/contact", "label": "Contact" }
     ],
     "cta": {

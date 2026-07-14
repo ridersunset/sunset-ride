@@ -28,25 +28,34 @@ function renderTitle(title?: string | null, accentWord?: string | null) {
   ));
 }
 
-// Fond vidéo en cascade : plusieurs vidéos jouées l'une après l'autre avec
-// fondu enchaîné lent. Une seule vidéo → boucle simple. Poster = bgImage.
+// Fond vidéo en cascade : le fondu enchaîné démarre AVANT la fin de la vidéo
+// active — les deux vidéos jouent pendant le recouvrement, donc aucune image
+// figée ni coupe sèche. Une seule vidéo → boucle simple. Poster = bgImage.
+const CROSSFADE_S = 1.6;
+
 function HeroVideos({ videos, poster, tinaFieldAttr }: { videos: string[]; poster?: string; tinaFieldAttr?: string }) {
   const [active, setActive] = useState(0);
   const refs = useRef<(HTMLVideoElement | null)[]>([]);
+  const switching = useRef(false);
+  const single = videos.length === 1;
 
   useEffect(() => {
+    switching.current = false;
     const el = refs.current[active];
     if (el) {
       el.currentTime = 0;
       el.play().catch(() => {});
     }
-    refs.current.forEach((v, i) => {
-      if (v && i !== active) v.pause();
-    });
+    // L'ancienne vidéo continue de jouer pendant le fondu, puis est mise en pause.
+    const t = setTimeout(() => {
+      refs.current.forEach((v, i) => {
+        if (v && i !== active) v.pause();
+      });
+    }, CROSSFADE_S * 1000 + 150);
+    return () => clearTimeout(t);
   }, [active]);
 
   if (!videos.length) return null;
-  const single = videos.length === 1;
 
   return (
     <span style={{ display: 'contents' }} data-tina-field={tinaFieldAttr}>
@@ -62,10 +71,16 @@ function HeroVideos({ videos, poster, tinaFieldAttr }: { videos: string[]; poste
           muted
           loop={single}
           playsInline
-          preload={i === 0 ? 'auto' : 'metadata'}
+          preload="auto"
           poster={i === 0 ? poster : undefined}
-          onEnded={() => {
-            if (!single) setActive((a) => (a + 1) % videos.length);
+          onTimeUpdate={(e) => {
+            if (single || i !== active || switching.current) return;
+            const v = e.currentTarget;
+            // Bascule CROSSFADE_S avant la fin → recouvrement fluide.
+            if (v.duration && v.duration - v.currentTime <= CROSSFADE_S) {
+              switching.current = true;
+              setActive((a) => (a + 1) % videos.length);
+            }
           }}
         >
           <source src={src} type="video/mp4" />

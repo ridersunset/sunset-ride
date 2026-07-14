@@ -165,8 +165,9 @@ hr.rule { border: 0; border-top: 1px solid var(--line); margin: 0; }
 }
 .hero__media img { animation: hero-media 2.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
-/* Cascade vidéo : fondu enchaîné lent entre les vidéos */
-.hero__video { opacity: 0; transition: opacity 1.4s ease-in-out; }
+/* Cascade vidéo : fondu enchaîné lent, entamé avant la fin de la vidéo active
+   (les deux jouent pendant le recouvrement — durée alignée sur CROSSFADE_S) */
+.hero__video { opacity: 0; transition: opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1); }
 .hero__video[data-active='true'] { opacity: 1; }
 .hero__scrim {
   position: absolute; inset: 0;
@@ -292,24 +293,25 @@ hr.rule { border: 0; border-top: 1px solid var(--line); margin: 0; }
   text-decoration: none;
 }
 
-/* La photo occupe tout le rectangle ; dé-zoom lent au survol */
+/* La photo occupe tout le rectangle ; au survol, dérive à peine perceptible —
+   très lente, très douce (pas de zoom appuyé) */
 .services__bg { position: absolute; inset: 0; }
 .services__bg img {
   object-fit: cover;
   transform: scale(1.001);
-  transition: transform calc(var(--motion) * 2.2);
+  transition: transform 4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-a.services__row-inner:hover .services__bg img { transform: scale(1.05); }
+a.services__row-inner:hover .services__bg img { transform: scale(1.018); }
 
-/* Voile encre : lisibilité du texte (gauche + bas), s'éclaircit au survol */
+/* Voile encre : lisibilité du texte (gauche + bas), respire à peine au survol */
 .services__scrim {
   position: absolute; inset: 0;
   background:
     linear-gradient(to right, rgba(18, 14, 9, 0.72) 0%, rgba(18, 14, 9, 0.35) 55%, rgba(18, 14, 9, 0.12) 100%),
     linear-gradient(to top, rgba(18, 14, 9, 0.55) 0%, rgba(18, 14, 9, 0) 45%);
-  transition: opacity calc(var(--motion) * 1.5);
+  transition: opacity 2.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-a.services__row-inner:hover .services__scrim { opacity: 0.85; }
+a.services__row-inner:hover .services__scrim { opacity: 0.94; }
 
 .services__index {
   position: relative;
@@ -373,17 +375,20 @@ html.reveal-go .reveal .services__row { opacity: 1; transform: none; }
 /* ── Galerie ────────────────────────────────────────────────────────────── */
 
 .gallery__grid { display: grid; gap: clamp(1rem, 2vw, 1.75rem); margin-top: 3.5rem; }
+/* Grille régulière : rangs uniformes, format 3:2 imposé — rien de déstructuré */
 .gallery[data-variant='grid'] .gallery__grid {
-  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
 }
+.gallery[data-variant='grid'] .gallery__item { aspect-ratio: 3 / 2; }
+.gallery[data-variant='grid'] .gallery__item img { height: 100%; object-fit: cover; }
 .gallery[data-variant='masonry'] .gallery__grid { display: block; columns: 3 18rem; }
 .gallery[data-variant='masonry'] .gallery__item { break-inside: avoid; margin-bottom: clamp(1rem, 2vw, 1.75rem); }
 .gallery__item { margin: 0; position: relative; overflow: hidden; border-radius: var(--radius); }
 .gallery__item img {
   width: 100%; height: auto; display: block;
-  transition: transform calc(var(--motion) * 1.6);
+  transition: transform 4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.gallery__item:hover img { transform: scale(1.04); }
+.gallery__item:hover img { transform: scale(1.018); }
 .gallery__item figcaption {
   position: absolute; inset-inline: 0; bottom: 0;
   padding: 2.25rem 1.25rem 1rem;
@@ -438,9 +443,9 @@ html.reveal-go .reveal .services__row { opacity: 1; transform: none; }
 .instagram__item { position: relative; overflow: hidden; border-radius: var(--radius); aspect-ratio: 1; display: block; }
 .instagram__item img {
   width: 100%; height: 100%; object-fit: cover;
-  transition: transform calc(var(--motion) * 1.6), opacity var(--motion);
+  transition: transform 4s cubic-bezier(0.16, 1, 0.3, 1), opacity 2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.instagram__item:hover img { transform: scale(1.05); opacity: 0.85; }
+.instagram__item:hover img { transform: scale(1.018); opacity: 0.88; }
 .instagram__handle {
   font-family: var(--font-accent), sans-serif;
   letter-spacing: 0.22em; text-transform: uppercase; font-size: 0.78rem;
