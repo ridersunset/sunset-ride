@@ -365,9 +365,7 @@ a.services__row-inner:hover .services__scrim { opacity: 0.94; }
 }
 .services__name {
   font-size: clamp(1.6rem, 3vw, 2.4rem);
-  transition: font-style var(--motion), letter-spacing var(--motion);
 }
-a.services__row-inner:hover .services__name { font-style: italic; }
 .services__desc { color: rgba(247, 242, 232, 0.85); margin: 0.65rem 0 0; }
 
 .services__more {
