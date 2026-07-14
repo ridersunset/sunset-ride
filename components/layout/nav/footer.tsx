@@ -19,7 +19,7 @@ export function Footer({ global }: { global: any }) {
 
   return (
     <footer className="site-footer">
-      <div className="site-footer__inner">
+      <div className="site-footer__inner reveal">
         <div>
           {header?.logo?.src && (
             <div className="site-footer__logo">

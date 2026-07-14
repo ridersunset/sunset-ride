@@ -219,8 +219,8 @@ hr.rule { border: 0; border-top: 1px solid var(--line); margin: 0; }
   to { transform: translateY(0); }
 }
 @keyframes hero-fade {
-  from { opacity: 0; transform: translateY(22px); }
-  to { opacity: 1; transform: none; }
+  from { opacity: 0; transform: translateY(22px); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
 }
 @keyframes hero-media {
   from { transform: scale(1.07); }
@@ -736,60 +736,90 @@ a.contact__value:hover { color: var(--accent); }
   color: rgba(245, 239, 227, 0.55);
 }
 
-/* ── Animations de révélation au scroll (pattern Edgard §8, raffiné) ─────
-   La section devient visible (.is-visible), puis ses éléments se révèlent
-   en cascade : sur-titre → titre (montée douce) → intro → images (rideau). */
+/* ── Apparitions — typo voilée & images en rideau (subtil, luxe) ──────────
+   Pattern Edgard §8, raffiné. Architecture : l'état MASQUÉ n'existe que tant
+   que la section n'a pas .is-visible (et que le filet reveal-go n'est pas
+   posé) — l'état visible = les styles de base, donc aucun conflit avec les
+   survols. Les transitions vivent sur des règles qui matchent en permanence. */
 
 .reveal { transition: opacity 0.2s; }
 html.reveal-on .reveal { opacity: 0.999; } /* garde la section peinte, les enfants portent l'animation */
 
-/* Typo — montée douce, décalée */
-html.reveal-on .reveal :is(.eyebrow, .section-title, .section-intro, .about__body, .about__stats, .instagram__handle, .cta__inner, .contact__grid) {
-  opacity: 0;
-  transform: translateY(26px);
-  transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-}
-html.reveal-on .reveal .section-title { transition-delay: 0.1s; }
-html.reveal-on .reveal .section-intro { transition-delay: 0.22s; }
-html.reveal-on .reveal .about__body { transition-delay: 0.22s; }
-html.reveal-on .reveal .about__stats { transition-delay: 0.34s; }
-
-/* Images — rideau : l'image se découvre du bas vers le haut + dé-zoom lent */
-html.reveal-on .reveal :is(.about__media, .gallery__item, .services__thumb, .instagram__item, .testimonials__card) {
-  opacity: 0;
-  clip-path: inset(8% 0 14% 0);
-  transform: translateY(22px);
+/* · Typo — montée douce derrière un léger voile qui se dissipe · */
+html.reveal-on .reveal :is(.eyebrow, .section-title, .section-intro, .about__body, .about__stats, .about__cta, .instagram__handle, .cta__inner),
+html.reveal-on .reveal .contact__grid > * {
   transition:
     opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1),
-    clip-path 1.3s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+    transform 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+    letter-spacing 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.reveal-on .reveal .section-title { transition-delay: 0.1s; }
+html.reveal-on .reveal :is(.section-intro, .about__body) { transition-delay: 0.22s; }
+html.reveal-on .reveal .about__stats { transition-delay: 0.34s; }
+html.reveal-on .reveal .about__cta { transition-delay: 0.46s; }
+html.reveal-on .reveal .contact__grid > *:nth-child(2) { transition-delay: 0.2s; }
+
+html.reveal-on:not(.reveal-go) .reveal:not(.is-visible) :is(.eyebrow, .section-title, .section-intro, .about__body, .about__stats, .about__cta, .instagram__handle, .cta__inner),
+html.reveal-on:not(.reveal-go) .reveal:not(.is-visible) .contact__grid > * {
+  opacity: 0;
+  transform: translateY(24px);
+  filter: blur(6px);
+}
+/* Les petites capitales « atterrissent » : l'espacement se resserre doucement */
+html.reveal-on:not(.reveal-go) .reveal:not(.is-visible) .eyebrow { letter-spacing: 0.46em; }
+
+/* · Images — rideau (clip) + l'image intérieure se pose lentement (Ken Burns) · */
+html.reveal-on .reveal :is(.about__media, .gallery__item, .instagram__item, .testimonials__card) {
+  transition:
+    opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+    clip-path 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.reveal-on:not(.reveal-go) .reveal:not(.is-visible) :is(.about__media, .gallery__item, .instagram__item, .testimonials__card) {
+  opacity: 0;
+  clip-path: inset(10% 0 16% 0);
+  transform: translateY(24px);
+}
+html.reveal-on:not(.reveal-go) .reveal:not(.is-visible) :is(.about__media-frame, .gallery__item, .instagram__item) img,
+html.reveal-on:not(.reveal-go) .reveal:not(.is-visible) .services__bg img {
+  transform: scale(1.07);
+}
+.about__media-frame img { transition: transform 4s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* · Légendes de galerie — fondu tardif, une fois la photo découverte · */
+html.reveal-on .reveal .gallery__item figcaption {
+  transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1) 0.55s, transform 1s cubic-bezier(0.22, 1, 0.36, 1) 0.55s;
+}
+html.reveal-on:not(.reveal-go) .reveal:not(.is-visible) .gallery__item figcaption {
+  opacity: 0;
+  transform: translateY(10px);
 }
 
-/* Cascade des grilles */
+/* · Cascade des grilles · */
 html.reveal-on .reveal :is(.gallery__item, .instagram__item, .testimonials__card):nth-child(2) { transition-delay: 0.12s; }
 html.reveal-on .reveal :is(.gallery__item, .instagram__item, .testimonials__card):nth-child(3) { transition-delay: 0.24s; }
 html.reveal-on .reveal :is(.gallery__item, .instagram__item, .testimonials__card):nth-child(4) { transition-delay: 0.36s; }
 html.reveal-on .reveal :is(.gallery__item, .instagram__item, .testimonials__card):nth-child(5) { transition-delay: 0.48s; }
 html.reveal-on .reveal :is(.gallery__item, .instagram__item, .testimonials__card):nth-child(n + 6) { transition-delay: 0.6s; }
 
-/* État révélé (ou filet de sécurité reveal-go sans JS) */
-html.reveal-on .reveal.is-visible :is(.eyebrow, .section-title, .section-intro, .about__body, .about__stats, .instagram__handle, .cta__inner, .contact__grid),
-html.reveal-go .reveal :is(.eyebrow, .section-title, .section-intro, .about__body, .about__stats, .instagram__handle, .cta__inner, .contact__grid) {
-  opacity: 1;
-  transform: none;
+/* · Pied de page — les trois colonnes se lèvent en léger décalé · */
+html.reveal-on .reveal.site-footer__inner > * {
+  transition: opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1), transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
 }
-html.reveal-on .reveal.is-visible :is(.about__media, .gallery__item, .services__thumb, .instagram__item, .testimonials__card),
-html.reveal-go .reveal :is(.about__media, .gallery__item, .services__thumb, .instagram__item, .testimonials__card) {
-  opacity: 1;
-  clip-path: inset(0 0 0 0);
-  transform: none;
+html.reveal-on .reveal.site-footer__inner > *:nth-child(2) { transition-delay: 0.14s; }
+html.reveal-on .reveal.site-footer__inner > *:nth-child(3) { transition-delay: 0.28s; }
+html.reveal-on:not(.reveal-go) .reveal.site-footer__inner:not(.is-visible) > * {
+  opacity: 0;
+  transform: translateY(22px);
 }
 
 @media (prefers-reduced-motion: reduce) {
   html.reveal-on .reveal, html.reveal-on .reveal * {
-    opacity: 1 !important; transform: none !important; clip-path: none !important; transition: none !important;
-    animation: none !important;
+    opacity: 1 !important; transform: none !important; clip-path: none !important;
+    filter: none !important; transition: none !important; animation: none !important;
   }
+  html.reveal-on .reveal .eyebrow { letter-spacing: 0.32em !important; }
   .hero__media video { display: none; }
   .hero__line-inner, .hero__eyebrow, .hero__subtitle, .hero__actions, .hero__media img { animation: none !important; }
   * { transition-duration: 0.01ms !important; }
