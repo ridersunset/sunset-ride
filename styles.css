@@ -229,20 +229,24 @@ hr.rule { border: 0; border-top: 1px solid var(--line); margin: 0; }
 .hero .cta-link--ghost { border-color: rgba(247, 242, 232, 0.4); color: #f7f2e8; }
 .hero .cta-link--ghost:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ── About — split éditorial asymétrique ────────────────────────────────── */
+/* ── About — split éditorial, image à fond perdu ────────────────────────
+   L'image file jusqu'au bord du site et occupe toute la hauteur du bloc
+   texte (alignée haut/bas). Le texte reste calé sur la colonne du site. */
 
 .about__grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: clamp(2rem, 5vw, 4.5rem);
-  align-items: center;
+  align-items: stretch;
 }
-@media (min-width: 900px) {
-  .about__grid { grid-template-columns: 1.05fr 0.95fr; }
-  .about[data-variant='media-right'] .about__media { order: 2; }
+.about__media { margin: 0; display: flex; flex-direction: column; }
+.about__media-frame {
+  position: relative;
+  flex: 1;
+  min-height: clamp(18rem, 55vw, 34rem);
+  overflow: hidden;
 }
-.about__media { position: relative; }
-.about__media img { width: 100%; height: auto; border-radius: var(--radius); }
+.about__media-frame img { object-fit: cover; }
 .about__media figcaption {
   font-family: var(--font-accent), sans-serif;
   font-size: 0.7rem;
@@ -250,25 +254,53 @@ hr.rule { border: 0; border-top: 1px solid var(--line); margin: 0; }
   text-transform: uppercase;
   color: var(--muted);
   margin-top: 0.9rem;
+  padding-inline: var(--gut);
 }
+.about__text { padding-inline: var(--gut); }
+
+@media (min-width: 900px) {
+  .about__grid { grid-template-columns: 1fr 1fr; gap: clamp(2.5rem, 5vw, 5rem); }
+  /* Le bloc texte s'aligne sur la colonne centrale du site ; l'image touche le bord */
+  .about[data-variant='media-left'] .about__text {
+    padding-left: 0;
+    padding-right: max(var(--gut), calc((100vw - var(--maxw)) / 2));
+  }
+  .about[data-variant='media-left'] .about__media figcaption { padding-inline: 0 0; padding-left: max(var(--gut), calc((100vw - var(--maxw)) / 2)); }
+  .about[data-variant='media-right'] .about__media { order: 2; }
+  .about[data-variant='media-right'] .about__text {
+    order: 1;
+    padding-right: 0;
+    padding-left: max(var(--gut), calc((100vw - var(--maxw)) / 2));
+  }
+  .about[data-variant='media-right'] .about__media figcaption { padding-left: 0; padding-right: max(var(--gut), calc((100vw - var(--maxw)) / 2)); text-align: right; }
+}
+
 .about__body { color: var(--muted); font-size: 1.125rem; white-space: pre-line; margin-top: 1.5rem; }
+
+/* Chiffres clés — une seule ligne alignée, libellés discrets */
 .about__stats {
-  display: flex; flex-wrap: wrap;
-  gap: clamp(1.5rem, 4vw, 3rem);
-  margin-top: 2.5rem; padding-top: 2rem;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: clamp(1rem, 2.5vw, 2.5rem);
+  margin-top: 2.5rem; padding: 2rem 0 0;
   border-top: 1px solid var(--line);
-  list-style: none; padding-left: 0;
+  list-style: none;
 }
 .about__stat-value {
   font-family: var(--font-display), serif;
-  font-size: 2rem;
+  font-size: 1.75rem;
   color: var(--accent);
   display: block;
+  line-height: 1.1;
 }
 .about__stat-label {
   font-family: var(--font-accent), sans-serif;
-  font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+  font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--muted);
+  display: block;
+  margin-top: 0.45rem;
+  line-height: 1.5;
 }
 
 /* ── Services / Expériences — rubriques rectangulaires, photo en fond ───── */
@@ -301,7 +333,7 @@ hr.rule { border: 0; border-top: 1px solid var(--line); margin: 0; }
   transform: scale(1.001);
   transition: transform 4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-a.services__row-inner:hover .services__bg img { transform: scale(1.018); }
+a.services__row-inner:hover .services__bg img { transform: scale(1.06); }
 
 /* Voile encre : lisibilité du texte (gauche + bas), respire à peine au survol */
 .services__scrim {
@@ -375,20 +407,82 @@ html.reveal-go .reveal .services__row { opacity: 1; transform: none; }
 /* ── Galerie ────────────────────────────────────────────────────────────── */
 
 .gallery__grid { display: grid; gap: clamp(1rem, 2vw, 1.75rem); margin-top: 3.5rem; }
-/* Grille régulière : rangs uniformes, format 3:2 imposé — rien de déstructuré */
+/* Grille régulière : rangs uniformes, format 3:2 imposé — la photo REMPLIT
+   la case (object-fit cover, aucune bande), la légende est posée dessus */
 .gallery[data-variant='grid'] .gallery__grid {
   grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
 }
 .gallery[data-variant='grid'] .gallery__item { aspect-ratio: 3 / 2; }
-.gallery[data-variant='grid'] .gallery__item img { height: 100%; object-fit: cover; }
+.gallery[data-variant='grid'] .gallery__item img { object-fit: cover; }
 .gallery[data-variant='masonry'] .gallery__grid { display: block; columns: 3 18rem; }
 .gallery[data-variant='masonry'] .gallery__item { break-inside: avoid; margin-bottom: clamp(1rem, 2vw, 1.75rem); }
 .gallery__item { margin: 0; position: relative; overflow: hidden; border-radius: var(--radius); }
 .gallery__item img {
-  width: 100%; height: auto; display: block;
+  width: 100%; display: block;
   transition: transform 4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.gallery__item:hover img { transform: scale(1.018); }
+.gallery__item:hover img { transform: scale(1.03); }
+
+/* Toute la case est cliquable → agrandissement (lightbox) */
+.gallery__zoom {
+  display: block; width: 100%; padding: 0; border: 0; background: none;
+  cursor: zoom-in;
+}
+.gallery[data-variant='grid'] .gallery__zoom { position: absolute; inset: 0; }
+
+/* ── Lightbox — agrandissement élégant ──────────────────────────────────── */
+
+.lightbox {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(18, 14, 9, 0.94);
+  display: flex; align-items: center; justify-content: center;
+  padding: clamp(1rem, 4vw, 3.5rem);
+  animation: lightbox-in 0.45s ease both;
+}
+.lightbox__figure {
+  margin: 0;
+  max-width: min(1400px, 94vw);
+  display: flex; flex-direction: column; align-items: center;
+}
+.lightbox__figure img {
+  max-width: 100%; max-height: 80vh;
+  object-fit: contain;
+  border-radius: var(--radius);
+  animation: lightbox-img 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.lightbox__figure figcaption {
+  font-family: var(--font-accent), sans-serif;
+  font-size: 0.72rem; letter-spacing: 0.24em; text-transform: uppercase;
+  color: rgba(247, 242, 232, 0.85);
+  margin-top: 1.25rem;
+  text-align: center;
+}
+.lightbox__close {
+  position: absolute; top: 1rem; right: 1.5rem;
+  background: none; border: 0;
+  color: #f7f2e8; font-size: 2.25rem; line-height: 1;
+  font-family: var(--font-body), serif;
+  cursor: pointer;
+  transition: color var(--motion), transform var(--motion);
+}
+.lightbox__close:hover { color: var(--accent); transform: rotate(90deg); }
+.lightbox__nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 3rem; height: 3rem;
+  display: flex; align-items: center; justify-content: center;
+  background: none;
+  border: 1px solid rgba(247, 242, 232, 0.35);
+  border-radius: 50%;
+  color: #f7f2e8; font-size: 1.1rem;
+  cursor: pointer;
+  transition: border-color var(--motion), color var(--motion);
+}
+.lightbox__nav:hover { border-color: var(--accent); color: var(--accent); }
+.lightbox__nav--prev { left: clamp(0.5rem, 2vw, 1.5rem); }
+.lightbox__nav--next { right: clamp(0.5rem, 2vw, 1.5rem); }
+
+@keyframes lightbox-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lightbox-img { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
 .gallery__item figcaption {
   position: absolute; inset-inline: 0; bottom: 0;
   padding: 2.25rem 1.25rem 1rem;

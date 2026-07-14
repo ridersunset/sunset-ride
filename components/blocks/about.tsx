@@ -7,17 +7,23 @@ import { titleAppearanceFields } from '../../tina/fields/appearance';
 import { titleStyle } from '../titleStyle';
 import { Media } from '../Media';
 
+// Split éditorial : l'image file jusqu'au bord du site (fond perdu) et occupe
+// toute la hauteur du bloc texte (alignée haut/bas avec lui).
 export function About({ data }: { data: any }) {
   return (
     <section className="about section" data-variant={data.variant || 'media-left'} data-tina-field={tinaField(data)}>
-      <div className="container about__grid">
-        <figure className="about__media" style={{ margin: 0 }}>
-          {data.image?.src && <Media image={data.image} tinaField={tinaField(data, 'image')} sizes="(max-width: 900px) 100vw, 50vw" />}
+      <div className="about__grid">
+        <figure className="about__media">
+          <div className="about__media-frame">
+            {data.image?.src && (
+              <Media image={data.image} fill sizes="(max-width: 900px) 100vw, 50vw" tinaField={tinaField(data, 'image')} />
+            )}
+          </div>
           {data.imageCaption && (
             <figcaption data-tina-field={tinaField(data, 'imageCaption')}>{data.imageCaption}</figcaption>
           )}
         </figure>
-        <div>
+        <div className="about__text">
           {data.eyebrow && (
             <p className="eyebrow" data-tina-field={tinaField(data, 'eyebrow')}>{data.eyebrow}</p>
           )}
