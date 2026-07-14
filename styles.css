@@ -411,7 +411,8 @@ html.reveal-go .reveal .services__row { opacity: 1; transform: none; }
 /* Grille régulière : rangs uniformes, format 3:2 imposé — la photo REMPLIT
    la case (object-fit cover, aucune bande), la légende est posée dessus */
 .gallery[data-variant='grid'] .gallery__grid {
-  grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
+  /* Grandes cases : 2 colonnes généreuses sur desktop, 1 en mobile */
+  grid-template-columns: repeat(auto-fit, minmax(min(27rem, 100%), 1fr));
 }
 .gallery[data-variant='grid'] .gallery__item { aspect-ratio: 3 / 2; }
 .gallery[data-variant='grid'] .gallery__item img { object-fit: cover; }
