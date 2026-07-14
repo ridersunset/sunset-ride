@@ -2,10 +2,11 @@
 import React from 'react';
 import type { Template } from 'tinacms';
 import { tinaField } from 'tinacms/dist/react';
-import { imageField } from '../../tina/fields';
+import { imageField, linkField } from '../../tina/fields';
 import { titleAppearanceFields } from '../../tina/fields/appearance';
 import { titleStyle } from '../titleStyle';
 import { Media } from '../Media';
+import { CtaLink } from '../CtaLink';
 
 // Split éditorial : l'image file jusqu'au bord du site (fond perdu) et occupe
 // toute la hauteur du bloc texte (alignée haut/bas avec lui).
@@ -42,6 +43,11 @@ export function About({ data }: { data: any }) {
                 </li>
               ))}
             </ul>
+          )}
+          {data.cta?.href && (
+            <p className="about__cta">
+              <CtaLink {...data.cta} className="cta-link--ghost" tinaField={tinaField(data, 'cta')} />
+            </p>
           )}
         </div>
       </div>
@@ -98,6 +104,7 @@ export const aboutBlockSchema: Template = {
         { name: 'label', type: 'string', label: 'Libellé', required: true },
       ],
     },
+    linkField('cta', 'Bouton (optionnel)'),
     ...titleAppearanceFields,
   ],
 };
