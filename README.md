@@ -1,112 +1,77 @@
-# Tina Starter 🦙
+# Sunset Ride — sunset-ride.com (refonte 2026)
 
-![tina-nextjs-starter-demo](https://user-images.githubusercontent.com/103008/130587027-995ccc45-a852-4f90-b658-13e8e0517339.gif)
+Site vitrine **Next.js 15 (App Router) + TinaCMS** pour Sunset Ride — location de
+voitures de collection (Côte d'Azur & Pays Basque). Un seul dépôt : le front,
+l'éditeur visuel `/admin` et le contenu (`content/`, Git = source de vérité).
 
-This Next.js starter is powered by [TinaCMS](https://app.tina.io) for you and your team to visually live edit the structured content of your website. ✨
+**Direction artistique : Luxe / Classique** (HEPTERACT_WEBSKIN_1) — Bodoni Moda
+(titres), EB Garamond (corps), Jost (navigation), palette ivoire/encre + or
+coucher-de-soleil, motion lente. Tout est piloté par les design tokens de
+`styles.css` (`data-style="luxe"` sur `<html>`).
 
-The content is managed through Markdown and JSON files stored in your GitHub repository, and queried through Tina GraphQL API.
-
-### Features
-
-- [Tina Headless CMS](https://app.tina.io) for authentication, content modeling, visual editing and team management.
-- [Vercel](https://vercel.com) deployment to visually edit your site from the `/admin` route.
-- Local development workflow from the filesystem with a local GraqhQL server.
-
-## Requirements
-
-- Git, [Node.js Active LTS](https://nodejs.org/en/about/releases/), pnpm installed for local development.
-- A [TinaCMS](https://app.tina.io) account for live editing.
-
-## Local Development
-
-Install the project's dependencies:
-
-> [!NOTE]  
-> [Do you know the best package manager for Node.js?](https://www.ssw.com.au/rules/best-package-manager-for-node/) Using the right package manager can greatly enhance your development workflow. We recommend using pnpm for its speed and efficient handling of dependencies. Learn more about why pnpm might be the best choice for your projects by checking out this rule from SSW.
-
-
-```
-pnpm install
-```
-
-Run the project locally:
-
-```
-pnpm dev
-```
-
-### Local URLs
-
-- http://localhost:3000 : browse the website
-- http://localhost:3000/admin : connect to Tina Cloud and go in edit mode
-- http://localhost:3000/exit-admin : log out of Tina Cloud
-- http://localhost:4001/altair/ : GraphQL playground to test queries and browse the API documentation
-
-## Deployment
-
-### GitHub Pages
-
-This starter can be deployed to GitHub Pages. A GitHub Actions workflow is included that handles the build and deployment process. 
-
-To deploy to GitHub Pages:
-
-1. In your repository settings, ensure GitHub Pages is enabled and set to deploy from the `gh-pages` branch
-2. Push changes to your main branch - the workflow will automatically build and deploy the site
-
-> [!NOTE]
-> When deploying to GitHub Pages, you'll need to update your secrets in Settings | Secrets and variables | Actions to include:
-> - `NEXT_PUBLIC_TINA_CLIENT_ID`
-> - `TINA_TOKEN`
->
-> You get these from your TinaCloud project - [read the docs](https://tina.io/docs/tina-cloud/deployment-options/github-pages)
-
-> [!IMPORTANT]
-> GitHub Pages does not support server side code, so this will run as a static site. If you don't want to deploy to GitHub pages, just delete `.github/workflows/build-and-deploy.yml`
-
-### Building the Starter Locally (Using the hosted content API)
-
-Replace the `.env.example`, with `.env`
-
-```
-NEXT_PUBLIC_TINA_CLIENT_ID=<get this from the project you create at app.tina.io>
-TINA_TOKEN=<get this from the project you create at app.tina.io>
-NEXT_PUBLIC_TINA_BRANCH=<Specify the branch with Tina configured>
-```
-
-Build the project:
+## Démarrage
 
 ```bash
-pnpm build
+cp .env.example .env        # renseigner les clés TinaCloud (voir ci-dessous)
+npm install
+npm run dev                 # http://localhost:3000 — éditeur sur /admin
 ```
 
-## Getting Help
+En local, l'admin fonctionne **sans** TinaCloud (mode local : les modifications
+écrivent directement dans `content/`).
 
-To get help with any TinaCMS challenges you may have:
+## Build de production
 
-- Visit the [documentation](https://tina.io/docs/) to learn about Tina.
-- [Join our Discord](https://discord.gg/zumN63Ybpf) to share feedback.
-- Visit the [community forum](https://community.tinacms.org/) to ask questions.
-- Get support through the chat widget on the TinaCMS Dashboard
-- [Email us](mailto:support@tina.io) to schedule a call with our team and share more about your context and what you're trying to achieve.
-- [Search or open an issue](https://github.com/tinacms/tinacms/issues) if something is not working.
-- Reach out on Twitter at [@tina_cms](https://twitter.com/tina_cms).
+```bash
+npm run build               # tinacms build && next build (Vercel exécute ceci)
+# Build local SANS TinaCloud (attention au piège NODE_ENV) :
+NODE_ENV=production npx tinacms build --skip-cloud-checks --local -c "next build"
+```
 
-## Development tips
+## Variables d'environnement
 
-### Visual Studio Code GraphQL extension
+| Variable | Rôle |
+| --- | --- |
+| `NEXT_PUBLIC_TINA_CLIENT_ID` | id du projet TinaCloud (app.tina.io) |
+| `TINA_TOKEN` | token lecture TinaCloud — requis au build |
+| `NEXT_PUBLIC_TINA_BRANCH` | branche suivie (`main`) |
+| `NEXT_PUBLIC_SITE_URL` | URL canonique (SEO / robots) |
+| `RESEND_API_KEY` *(opt.)* | envoi réel du formulaire de contact |
+| `CONTACT_FROM` *(opt.)* | expéditeur vérifié chez Resend |
 
-[Install the GraphQL extension](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql) to benefit from type auto-completion.
+## Déploiement Vercel
 
-### Typescript
+1. Créer un **projet TinaCloud isolé** pour ce client (app.tina.io), relier le
+   repo Git + la branche `main`.
+2. Dans Vercel : importer le repo, poser les variables d'env **avant** le build.
+3. Build command par défaut (`npm run build`) — l'éditeur est servi sur `/admin`.
+4. Activer la **protection par mot de passe** Vercel sur le preview (démo client).
 
-A good way to ensure your components match the shape of your data is to leverage the auto-generated TypeScript types.
-These are rebuilt when your `tina` config changes.
+## Handoff client
 
-## LICENSE
+1. Inviter le client comme utilisateur sur **son** projet TinaCloud.
+2. Lui donner `https://<site>/admin` : édition « clic sur la page », aperçu en
+   temps réel, publication = commit Git automatique.
+3. Limites médias repo-based à mentionner : pas de renommage via le Media
+   Manager (supprimer/re-uploader), 100 Mio max par fichier.
 
-Licensed under the [Apache 2.0 license](./LICENSE).
+## Contenu & structure
 
+- `content/pages/*.mdx` — pages composées de **blocks** (Héro, À propos,
+  Expériences, Galerie, Témoignages, Instagram, CTA, Contact).
+- `content/global/index.json` — header, footer, réglages (couleur d'accent,
+  tailles de texte, police des titres, coordonnées NAP Nice & Biarritz).
+- `public/uploads/` — photos réelles du client (+ `videos/hero-golden-hour.mp4`).
+- Schéma Tina : `tina/config.tsx`, `tina/collection/`, `tina/fields/`.
+- Blocks : `components/blocks/*.tsx` (template Tina + composant React colocalisés).
 
-# Repository cleaned of LFS content
-# Repository cleaned of LFS content - Wed Sep 17 15:00:42 AEST 2025
+## ⚠️ À faire avant la mise en ligne définitive
 
+- [ ] **Témoignages** : les 3 avis seedés sont des *placeholders rédactionnels* —
+      les remplacer par de vrais avis Google du client.
+- [ ] **Carte Google Maps** : coller le vrai lien « Intégrer une carte » dans la
+      section Contact (champ validé, doit commencer par
+      `https://www.google.com/maps/embed`).
+- [ ] **Formulaire** : brancher `RESEND_API_KEY` + domaine expéditeur vérifié.
+- [ ] Vérifier les 20 modèles listés sur la page `/cars` avec Paul (fleet réelle).
+- [ ] Page mentions légales (SIREN, hébergeur, RGPD) à créer via l'admin.

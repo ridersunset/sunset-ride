@@ -1,48 +1,55 @@
-import { tinaField } from "tinacms/dist/react";
-import { Page, PageBlocks } from "../../tina/__generated__/types";
-import { Hero } from "./hero";
-import { Content } from "./content";
-import { Features } from "./features";
-import { Testimonial } from "./testimonial";
-import { Video } from "./video";
-import { Callout } from "./callout";
-import { Stats } from "./stats";
-import { CallToAction } from "./call-to-action";
+'use client';
+import React from 'react';
+import { Hero } from './hero';
+import { About } from './about';
+import { Services } from './services';
+import { Gallery } from './gallery';
+import { Testimonials } from './testimonials';
+import { Instagram } from './instagram';
+import { CallToAction } from './call-to-action';
+import { Contact } from './contact';
 
-export const Blocks = (props: Omit<Page, "id" | "_sys" | "_values">) => {
-  if (!props.blocks) return null;
+// Switch sur block.__typename ({Collection}{Field}{Template}).
+// Chaque section (hors héro, visible immédiatement) est enveloppée dans un
+// wrapper `.reveal` animé au scroll par ScrollReveal.
+function Block({ block }: { block: any }) {
+  switch (block.__typename) {
+    case 'PageBlocksHero':
+      return <Hero data={block} />;
+    case 'PageBlocksAbout':
+      return <About data={block} />;
+    case 'PageBlocksServices':
+      return <Services data={block} />;
+    case 'PageBlocksGallery':
+      return <Gallery data={block} />;
+    case 'PageBlocksTestimonials':
+      return <Testimonials data={block} />;
+    case 'PageBlocksInstagram':
+      return <Instagram data={block} />;
+    case 'PageBlocksCta':
+      return <CallToAction data={block} />;
+    case 'PageBlocksContact':
+      return <Contact data={block} />;
+    default:
+      return null;
+  }
+}
+
+export function Blocks(props: { blocks?: any[] | null }) {
+  if (!props.blocks?.length) return null;
   return (
     <>
-      {props.blocks.map(function (block, i) {
+      {props.blocks.map((block, i) => {
+        if (!block) return null;
+        if (block.__typename === 'PageBlocksHero') {
+          return <Block block={block} key={i} />;
+        }
         return (
-          <div key={i} data-tina-field={tinaField(block)}>
-            <Block {...block} />
+          <div className="reveal" key={i}>
+            <Block block={block} />
           </div>
         );
       })}
     </>
   );
-};
-
-const Block = (block: PageBlocks) => {
-  switch (block.__typename) {
-    case "PageBlocksVideo":
-      return <Video data={block} />;
-    case "PageBlocksHero":
-      return <Hero data={block} />;
-    case "PageBlocksCallout":
-      return <Callout data={block} />;
-    case "PageBlocksStats":
-      return <Stats data={block} />;
-    case "PageBlocksContent":
-      return <Content data={block} />;
-    case "PageBlocksFeatures":
-      return <Features data={block} />;
-    case "PageBlocksTestimonial":
-      return <Testimonial data={block} />;
-    case "PageBlocksCta":
-      return <CallToAction data={block} />;
-    default:
-      return null;
-  }
-};
+}

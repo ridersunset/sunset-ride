@@ -1,33 +1,23 @@
 import React from "react";
-import { Metadata } from "next";
-import { Inter as FontSans, Lato, Nunito } from "next/font/google";
-import { cn } from "@/lib/utils";
-import { VideoDialogProvider } from "@/components/ui/VideoDialogContext";
-import VideoDialog from "@/components/ui/VideoDialog";
+import type { Metadata } from "next";
+import { heading, body, accent } from "./fonts";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 import "@/styles.css";
-import { TailwindIndicator } from "@/components/ui/breakpoint-indicator";
-
-const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
-
-const nunito = Nunito({
-  subsets: ["latin"],
-  variable: "--font-nunito",
-});
-
-const lato = Lato({
-  subsets: ["latin"],
-  variable: "--font-lato",
-  weight: "400",
-});
 
 export const metadata: Metadata = {
-  title: "Tina",
-  description: "Tina Cloud Starter",
+  title: {
+    default: "Sunset Ride — Location de voitures de collection | Côte d'Azur & Pays Basque",
+    template: "%s — Sunset Ride",
+  },
+  description:
+    "Location de voitures de collection sur la Côte d'Azur et au Pays Basque : road trips, mariages, shootings photo, rallyes. Nice & Biarritz.",
 };
+
+// Anti-flash (pattern Edgard §8) : pose `reveal-on` sur <html> AVANT le 1er
+// paint pour que les sections .reveal démarrent invisibles sans clignoter,
+// + filet de sécurité `reveal-go` si le JS ne charge pas.
+const revealScript = `document.documentElement.classList.add('reveal-on');setTimeout(function(){document.documentElement.classList.add('reveal-go')},2000);`;
 
 export default function RootLayout({
   children,
@@ -35,13 +25,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cn(fontSans.variable, nunito.variable, lato.variable)}>
-      <body className="min-h-screen bg-background font-sans antialiased">
-        <VideoDialogProvider>
-          {children}
-          <VideoDialog />
-        </VideoDialogProvider>
-        <TailwindIndicator />
+    <html
+      lang="fr"
+      data-style="luxe"
+      className={`${heading.variable} ${body.variable} ${accent.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: revealScript }} />
+      </head>
+      <body>
+        {children}
+        <ScrollReveal />
       </body>
     </html>
   );

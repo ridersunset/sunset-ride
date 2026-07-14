@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sunset-ride-dev",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["tinacms", "dev", "-c", "next dev"],
+      "port": 3000
+    }
+  ]
+}

@@ -1,38 +1,94 @@
-"use client";
-import React from "react";
-import Link from "next/link";
-import { Icon } from "../../icon";
-import { useLayout } from "../layout-context";
+'use client';
+import React from 'react';
+import Link from 'next/link';
+import { tinaField } from 'tinacms/dist/react';
+import { Media } from '../../Media';
 
-export const Footer = () => {
-  const { globalSettings } = useLayout();
-  const { header, footer } = globalSettings!;
+export function Footer({ global }: { global: any }) {
+  const footer = global?.footer;
+  const header = global?.header;
+  const contact = global?.settings?.contact;
 
   return (
-    <footer className="border-b bg-white pt-20 dark:bg-transparent">
-      <div className="mx-auto max-w-5xl px-6">
-        <div className="mt-12 flex flex-wrap items-center gap-6 border-t py-6 flex-col md:flex-row md:justify-between">
+    <footer className="site-footer">
+      <div className="site-footer__inner">
+        <div>
+          {header?.logo?.src && (
+            <div className="site-footer__logo">
+              <Media image={header.logo} sizes="220px" />
+            </div>
+          )}
+          {footer?.tagline && (
+            <p className="site-footer__tagline" data-tina-field={tinaField(footer, 'tagline')}>
+              {footer.tagline}
+            </p>
+          )}
+        </div>
 
-          <div className="order-last flex justify-center md:order-first md:justify-start">
-            <Link href="/" aria-label="go home">
-              <Icon
-                parentColor={header!.color!}
-                data={header!.icon}
-              />
-            </Link>
-            <span className="self-center text-muted-foreground text-sm ml-2">© {new Date().getFullYear()} {header?.name}, All rights reserved</span>
-          </div>
-
-          <div className="order-first flex justify-center gap-6 text-sm md:order-last md:justify-end">
-            {footer?.social?.map((link, index) => (
-              <Link key={`${link!.icon}${index}`} href={link!.url!} target="_blank" rel="noopener noreferrer" >
-                <Icon data={{ ...link!.icon, size: 'small' }} className="text-muted-foreground hover:text-primary block" />
-              </Link>
+        <nav aria-label="Navigation pied de page">
+          <h2 className="site-footer__heading">Explorer</h2>
+          <ul>
+            {(header?.nav || []).map((item: any, i: number) => (
+              <li key={i}>
+                <Link href={item.href || '/'}>{item.label}</Link>
+              </li>
             ))}
-          </div>
+          </ul>
+        </nav>
 
+        <div>
+          <h2 className="site-footer__heading">Contact</h2>
+          <address>
+            {contact?.email && (
+              <>
+                <a href={`mailto:${contact.email}`}>{contact.email}</a>
+                <br />
+              </>
+            )}
+            {contact?.phone && (
+              <>
+                <a href={`tel:${(contact.phone || '').replace(/\s/g, '')}`}>{contact.phone}</a>
+                <br />
+              </>
+            )}
+            {(contact?.locations || []).map((loc: any, i: number) => (
+              <React.Fragment key={i}>
+                <span>
+                  {loc.city} — {loc.address}
+                </span>
+                <br />
+              </React.Fragment>
+            ))}
+          </address>
+          {footer?.social?.length > 0 && (
+            <ul style={{ display: 'flex', gap: '1.25rem', marginTop: '1.5rem' }}>
+              {footer.social.map((s: any, i: number) => (
+                <li key={i}>
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-tina-field={tinaField(s)}
+                    style={{
+                      fontFamily: 'var(--font-accent), sans-serif',
+                      fontSize: '0.72rem',
+                      letterSpacing: '0.2em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {s.platform}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
+      {footer?.legalText && (
+        <div className="site-footer__legal" data-tina-field={tinaField(footer, 'legalText')}>
+          {footer.legalText}
+        </div>
+      )}
     </footer>
   );
 }

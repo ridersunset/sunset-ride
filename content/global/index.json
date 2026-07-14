@@ -1,58 +1,50 @@
 {
   "header": {
-    "icon": {
-      "name": "Tina",
-      "color": "orange",
-      "style": "float"
+    "logo": {
+      "src": "/uploads/logo-sunset-ride.png",
+      "alt": "Sunset Ride — location de voitures de collection"
     },
-    "name": "Tina Starter",
-    "color": "default",
     "nav": [
-      {
-        "href": "/",
-        "label": "Home"
-      },
-      {
-        "href": "/about",
-        "label": "About"
-      },
-      {
-        "href": "/posts",
-        "label": "Blog"
-      }
-    ]
+      { "href": "/cars", "label": "The Collection" },
+      { "href": "/experiences", "label": "Experiences" },
+      { "href": "/weddings", "label": "Weddings" },
+      { "href": "/contact", "label": "Contact" }
+    ],
+    "cta": {
+      "label": "Book your ride",
+      "href": "/contact",
+      "newTab": false
+    }
   },
   "footer": {
+    "tagline": "Hand-restored icons for the French Riviera and the Basque Country. Icons, not just cars.",
     "social": [
-      {
-        "icon": {
-          "name": "FaLinkedin"
-        },
-        "url": "https://www.linkedin.com/company/tinacms"
-      },
-      {
-        "icon": {
-          "name": "FaGithub"
-        },
-        "url": "https://github.com/tinacms/tinacms"
-      },
-      {
-        "icon": {
-          "name": "FaYoutube"
-        },
-        "url": "https://www.youtube.com/@TinaCMS"
-      },
-      {
-        "icon": {
-          "name": "FaXTwitter"
-        },
-        "url": "https://x.com/TinaCMS"
-      }
-    ]
+      { "platform": "Instagram", "url": "https://www.instagram.com/_sunsetride/" },
+      { "platform": "TikTok", "url": "https://www.tiktok.com/@_sunsetride" },
+      { "platform": "Facebook", "url": "https://www.facebook.com/share/pMbTU3b5BHY8f8kE/" }
+    ],
+    "legalText": "© 2026 Sunset Ride — Classic Car Rental · Nice & Biarritz · All rights reserved"
   },
-  "theme": {
-    "color": "blue",
-    "font": "sans",
-    "darkMode": "light"
+  "settings": {
+    "siteName": "Sunset Ride",
+    "description": "Classic car rental on the French Riviera and the Basque Country — self-drive tours, weddings, photo shoots and rallies. Nice & Biarritz.",
+    "siteUrl": "https://sunset-ride.com",
+    "ogImage": {
+      "src": "/uploads/hero-biarritz-golden-hour.jpg",
+      "alt": "Two classic convertibles at golden hour on the Biarritz coast"
+    },
+    "accentColor": "#b07f3a",
+    "fontScale": "normal",
+    "headingScale": "normal",
+    "headingFont": "heading",
+    "contact": {
+      "email": "paul.sunsetride@gmail.com",
+      "phone": "+33 6 38 77 69 36",
+      "hours": "Monday – Sunday · 9 AM – 7 PM",
+      "locations": [
+        { "city": "Nice", "address": "48 Route de Canta Galet, 06200 Nice" },
+        { "city": "Biarritz", "address": "Allée du Moura, 64200 Biarritz" }
+      ]
+    }
   }
 }
