@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { Template } from 'tinacms';
 import { tinaField } from 'tinacms/dist/react';
 import { imageField, linkField } from '../../tina/fields';
@@ -8,43 +8,89 @@ import { titleStyle } from '../titleStyle';
 import { CtaLink } from '../CtaLink';
 
 // Titre : textarea → retours à la ligne via \n ; accentWord rendu en italique doré.
+// Chaque ligne est masquée puis « monte » à l'entrée (animation hero-line).
 function renderTitle(title?: string | null, accentWord?: string | null) {
   if (!title) return null;
-  return title.split('\n').map((line, i, arr) => (
-    <React.Fragment key={i}>
-      {accentWord && line.includes(accentWord) ? (
-        <>
-          {line.slice(0, line.indexOf(accentWord))}
-          <em>{accentWord}</em>
-          {line.slice(line.indexOf(accentWord) + accentWord.length)}
-        </>
-      ) : (
-        line
-      )}
-      {i < arr.length - 1 && <br />}
-    </React.Fragment>
+  return title.split('\n').map((line, i) => (
+    <span className="hero__line" key={i}>
+      <span className="hero__line-inner" style={{ animationDelay: `${0.35 + i * 0.14}s` }}>
+        {accentWord && line.includes(accentWord) ? (
+          <>
+            {line.slice(0, line.indexOf(accentWord))}
+            <em>{accentWord}</em>
+            {line.slice(line.indexOf(accentWord) + accentWord.length)}
+          </>
+        ) : (
+          line
+        )}
+      </span>
+    </span>
   ));
 }
 
+// Fond vidéo en cascade : plusieurs vidéos jouées l'une après l'autre avec
+// fondu enchaîné lent. Une seule vidéo → boucle simple. Poster = bgImage.
+function HeroVideos({ videos, poster, tinaFieldAttr }: { videos: string[]; poster?: string; tinaFieldAttr?: string }) {
+  const [active, setActive] = useState(0);
+  const refs = useRef<(HTMLVideoElement | null)[]>([]);
+
+  useEffect(() => {
+    const el = refs.current[active];
+    if (el) {
+      el.currentTime = 0;
+      el.play().catch(() => {});
+    }
+    refs.current.forEach((v, i) => {
+      if (v && i !== active) v.pause();
+    });
+  }, [active]);
+
+  if (!videos.length) return null;
+  const single = videos.length === 1;
+
+  return (
+    <span style={{ display: 'contents' }} data-tina-field={tinaFieldAttr}>
+      {videos.map((src, i) => (
+        <video
+          key={i}
+          ref={(el) => {
+            refs.current[i] = el;
+          }}
+          className="hero__video"
+          data-active={i === active}
+          autoPlay={i === 0}
+          muted
+          loop={single}
+          playsInline
+          preload={i === 0 ? 'auto' : 'metadata'}
+          poster={i === 0 ? poster : undefined}
+          onEnded={() => {
+            if (!single) setActive((a) => (a + 1) % videos.length);
+          }}
+        >
+          <source src={src} type="video/mp4" />
+        </video>
+      ))}
+    </span>
+  );
+}
+
 export function Hero({ data }: { data: any }) {
+  const videos: string[] = (data.videos || []).map((v: any) => v?.src).filter(Boolean);
   return (
     <section className="hero" data-align={data.variant || 'left'} data-tina-field={tinaField(data)}>
       <div className="hero__media" aria-hidden="true">
         {data.bgImage?.src && (
-          // Poster prioritaire : LCP = cette image, la vidéo vient par-dessus.
+          // Poster prioritaire : LCP = cette image, les vidéos viennent par-dessus.
           // eslint-disable-next-line @next/next/no-img-element
           <img src={data.bgImage.src} alt="" fetchPriority="high" data-tina-field={tinaField(data, 'bgImage')} />
         )}
-        {data.video && (
-          <video autoPlay muted loop playsInline poster={data.bgImage?.src || undefined} data-tina-field={tinaField(data, 'video')}>
-            <source src={data.video} type="video/mp4" />
-          </video>
-        )}
+        <HeroVideos videos={videos} poster={data.bgImage?.src} tinaFieldAttr={tinaField(data, 'videos')} />
       </div>
       <div className="hero__scrim" aria-hidden="true" />
       <div className="hero__inner">
         {data.eyebrow && (
-          <p className="eyebrow" data-tina-field={tinaField(data, 'eyebrow')}>{data.eyebrow}</p>
+          <p className="eyebrow hero__eyebrow" data-tina-field={tinaField(data, 'eyebrow')}>{data.eyebrow}</p>
         )}
         <h1 className="hero__title" style={titleStyle(data)} data-tina-field={tinaField(data, 'title')}>
           {renderTitle(data.title, data.accentWord)}
@@ -119,10 +165,18 @@ export const heroBlockSchema: Template = {
       description: 'Une ou deux phrases qui précisent la promesse.',
     },
     {
-      name: 'video',
-      type: 'image',
-      label: 'Vidéo de fond (optionnel, MP4)',
-      description: 'Courte vidéo en boucle, sans son. L’image ci-dessous sert d’affiche pendant le chargement.',
+      name: 'videos',
+      type: 'object',
+      label: 'Vidéos de fond (optionnel)',
+      list: true,
+      ui: {
+        itemProps: (item) => ({ label: item?.src ? String(item.src).split('/').pop() : 'Vidéo' }),
+        description:
+          'Courtes vidéos MP4 sans son, jouées l’une après l’autre en fondu enchaîné. L’image ci-dessous sert d’affiche pendant le chargement.',
+      },
+      fields: [
+        { name: 'src', type: 'image', label: 'Fichier vidéo (MP4)', required: true },
+      ],
     },
     imageField('bgImage', 'Image de fond (obligatoire — sert aussi d’affiche vidéo)'),
     linkField('primaryCta', 'Bouton principal'),

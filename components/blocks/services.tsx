@@ -8,21 +8,34 @@ import { titleAppearanceFields } from '../../tina/fields/appearance';
 import { titleStyle } from '../titleStyle';
 import { Media } from '../Media';
 
-function CardInner({ item }: { item: any }) {
+// Table éditoriale aux filets fins : index · étiquette · titre/description ·
+// vignette · appel « Discover ». Chaque ligne se révèle en cascade au scroll.
+function RowInner({ item, index, moreLabel }: { item: any; index: number; moreLabel: string }) {
   return (
     <>
-      <div className="services__figure">
-        {item.image?.src && <Media image={item.image} sizes="(max-width: 700px) 100vw, 25vw" />}
+      <span className="services__index" aria-hidden="true">
+        {String(index + 1).padStart(2, '0')}
+      </span>
+      <div className="services__body">
+        {item.tag && <p className="services__tag" data-tina-field={tinaField(item, 'tag')}>{item.tag}</p>}
+        <h3 className="services__name" data-tina-field={tinaField(item, 'title')}>{item.title}</h3>
+        <p className="services__desc" data-tina-field={tinaField(item, 'description')}>{item.description}</p>
       </div>
-      {item.tag && <p className="services__tag" data-tina-field={tinaField(item, 'tag')}>{item.tag}</p>}
-      <h3 className="services__name" data-tina-field={tinaField(item, 'title')}>{item.title}</h3>
-      <p className="services__desc" data-tina-field={tinaField(item, 'description')}>{item.description}</p>
-      {item.href && <span className="services__more">Découvrir</span>}
+      <div className="services__thumb" aria-hidden="true">
+        {item.image?.src && <Media image={item.image} sizes="(max-width: 900px) 100vw, 300px" />}
+      </div>
+      {item.href && (
+        <span className="services__more">
+          <span className="services__more-label">{moreLabel}</span>
+          <span className="services__more-arrow" aria-hidden="true">→</span>
+        </span>
+      )}
     </>
   );
 }
 
 export function Services({ data }: { data: any }) {
+  const moreLabel = data.moreLabel || 'Discover';
   return (
     <section className="services section" data-tina-field={tinaField(data)}>
       <div className="container">
@@ -35,15 +48,17 @@ export function Services({ data }: { data: any }) {
         {data.intro && (
           <p className="section-intro" data-tina-field={tinaField(data, 'intro')}>{data.intro}</p>
         )}
-        <ul className="services__grid">
+        <ul className="services__table">
           {data.items?.map((item: any, i: number) => (
-            <li key={i} className="services__card" data-tina-field={tinaField(item)}>
+            <li key={i} className="services__row" style={{ transitionDelay: `${i * 120}ms` }} data-tina-field={tinaField(item)}>
               {item.href ? (
-                <Link href={item.href} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                  <CardInner item={item} />
+                <Link href={item.href} className="services__row-inner">
+                  <RowInner item={item} index={i} moreLabel={moreLabel} />
                 </Link>
               ) : (
-                <CardInner item={item} />
+                <div className="services__row-inner">
+                  <RowInner item={item} index={i} moreLabel={moreLabel} />
+                </div>
               )}
             </li>
           ))}
@@ -67,9 +82,15 @@ export const servicesBlockSchema: Template = {
     { name: 'title', type: 'string', label: 'Titre de la section', required: true },
     { name: 'intro', type: 'string', label: 'Introduction (optionnel)', ui: { component: 'textarea' } },
     {
+      name: 'moreLabel',
+      type: 'string',
+      label: 'Texte du lien de ligne',
+      description: 'Le petit appel au bout de chaque ligne. Ex. « Discover » ou « Découvrir ».',
+    },
+    {
       name: 'items',
       type: 'object',
-      label: 'Cartes',
+      label: 'Lignes',
       list: true,
       ui: {
         itemProps: (item) => ({ label: item?.title || 'Expérience' }),
@@ -80,11 +101,11 @@ export const servicesBlockSchema: Template = {
         },
       },
       fields: [
-        imageField('image', 'Image de la carte'),
-        { name: 'tag', type: 'string', label: 'Étiquette (optionnel)', description: 'Ex. « Sans chauffeur » ou « Sur devis ».' },
+        imageField('image', 'Vignette de la ligne'),
+        { name: 'tag', type: 'string', label: 'Étiquette (optionnel)', description: 'Ex. « Self-drive » ou « Sur devis ».' },
         { name: 'title', type: 'string', label: 'Nom', required: true },
         { name: 'description', type: 'string', label: 'Description', required: true, ui: { component: 'textarea' } },
-        { name: 'href', type: 'string', label: 'Lien de la carte (optionnel)', description: 'Chemin interne (ex. /mariages) ou URL complète.' },
+        { name: 'href', type: 'string', label: 'Lien de la ligne (optionnel)', description: 'Chemin interne (ex. /weddings) ou URL complète.' },
       ],
     },
     ...titleAppearanceFields,
