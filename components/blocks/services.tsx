@@ -8,11 +8,18 @@ import { titleAppearanceFields } from '../../tina/fields/appearance';
 import { titleStyle } from '../titleStyle';
 import { Media } from '../Media';
 
-// Table éditoriale aux filets fins : index · étiquette · titre/description ·
-// vignette · appel « Discover ». Chaque ligne se révèle en cascade au scroll.
+// Rubriques rectangulaires : la photo occupe TOUT le fond de la ligne,
+// voilée d'un dégradé encre pour la lisibilité ; index · étiquette · titre ·
+// description · appel « Discover » posés par-dessus en ivoire.
 function RowInner({ item, index, moreLabel }: { item: any; index: number; moreLabel: string }) {
   return (
     <>
+      <div className="services__bg" aria-hidden="true">
+        {item.image?.src && (
+          <Media image={item.image} fill sizes="(max-width: 900px) 100vw, 1200px" tinaField={tinaField(item, 'image')} />
+        )}
+      </div>
+      <div className="services__scrim" aria-hidden="true" />
       <span className="services__index" aria-hidden="true">
         {String(index + 1).padStart(2, '0')}
       </span>
@@ -20,9 +27,6 @@ function RowInner({ item, index, moreLabel }: { item: any; index: number; moreLa
         {item.tag && <p className="services__tag" data-tina-field={tinaField(item, 'tag')}>{item.tag}</p>}
         <h3 className="services__name" data-tina-field={tinaField(item, 'title')}>{item.title}</h3>
         <p className="services__desc" data-tina-field={tinaField(item, 'description')}>{item.description}</p>
-      </div>
-      <div className="services__thumb" aria-hidden="true">
-        {item.image?.src && <Media image={item.image} sizes="(max-width: 900px) 100vw, 300px" />}
       </div>
       {item.href && (
         <span className="services__more">
@@ -101,7 +105,7 @@ export const servicesBlockSchema: Template = {
         },
       },
       fields: [
-        imageField('image', 'Vignette de la ligne'),
+        imageField('image', 'Photo de fond de la rubrique'),
         { name: 'tag', type: 'string', label: 'Étiquette (optionnel)', description: 'Ex. « Self-drive » ou « Sur devis ».' },
         { name: 'title', type: 'string', label: 'Nom', required: true },
         { name: 'description', type: 'string', label: 'Description', required: true, ui: { component: 'textarea' } },
