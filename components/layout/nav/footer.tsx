@@ -1,13 +1,21 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { tinaField } from 'tinacms/dist/react';
 import { Media } from '../../Media';
+import { localeFromPath, toFr } from '../../locale';
 
 export function Footer({ global }: { global: any }) {
   const footer = global?.footer;
   const header = global?.header;
   const contact = global?.settings?.contact;
+  const pathname = usePathname();
+  const isFr = localeFromPath(pathname) === 'fr';
+
+  const tagline = isFr ? footer?.taglineFr || footer?.tagline : footer?.tagline;
+  const labelFor = (item: any) => (isFr ? item.labelFr || item.label : item.label);
+  const hrefFor = (item: any) => (isFr ? toFr(item.href || '/') : item.href || '/');
 
   return (
     <footer className="site-footer">
@@ -18,19 +26,19 @@ export function Footer({ global }: { global: any }) {
               <Media image={header.logo} sizes="220px" />
             </div>
           )}
-          {footer?.tagline && (
-            <p className="site-footer__tagline" data-tina-field={tinaField(footer, 'tagline')}>
-              {footer.tagline}
+          {tagline && (
+            <p className="site-footer__tagline" data-tina-field={tinaField(footer, isFr ? 'taglineFr' : 'tagline')}>
+              {tagline}
             </p>
           )}
         </div>
 
-        <nav aria-label="Navigation pied de page">
-          <h2 className="site-footer__heading">Explorer</h2>
+        <nav aria-label={isFr ? 'Navigation pied de page' : 'Footer navigation'}>
+          <h2 className="site-footer__heading">{isFr ? 'Explorer' : 'Explore'}</h2>
           <ul>
             {(header?.nav || []).map((item: any, i: number) => (
               <li key={i}>
-                <Link href={item.href || '/'}>{item.label}</Link>
+                <Link href={hrefFor(item)}>{labelFor(item)}</Link>
               </li>
             ))}
           </ul>

@@ -16,9 +16,27 @@ export async function generateMetadata({
   const filepath = resolvedParams.urlSegments.join('/');
   try {
     const { data } = await client.queries.page({ relativePath: `${filepath}.mdx` });
+    // Chemins équivalents EN / FR (slugs miroir sous /fr) pour hreflang.
+    let enPath: string;
+    let frPath: string;
+    if (filepath === 'fr') {
+      enPath = '/';
+      frPath = '/fr';
+    } else if (filepath.startsWith('fr/')) {
+      enPath = `/${filepath.slice(3)}`;
+      frPath = `/${filepath}`;
+    } else {
+      enPath = `/${filepath}`;
+      frPath = `/fr/${filepath}`;
+    }
+    const isFr = filepath === 'fr' || filepath.startsWith('fr/');
     return {
       title: data.page.title,
       description: (data.page as any).description || undefined,
+      alternates: {
+        canonical: isFr ? frPath : enPath,
+        languages: { en: enPath, fr: frPath, 'x-default': enPath },
+      },
     };
   } catch {
     return {};

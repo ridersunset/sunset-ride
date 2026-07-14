@@ -55,6 +55,20 @@ NODE_ENV=production npx tinacms build --skip-cloud-checks --local -c "next build
 3. Limites médias repo-based à mentionner : pas de renommage via le Media
    Manager (supprimer/re-uploader), 100 Mio max par fichier.
 
+## Bilingue (EN / FR)
+
+- **EN par défaut** à la racine (`/`, `/cars`…), **FR** sous `/fr` avec des
+  slugs miroir (`/cars` ↔ `/fr/cars`). Sélecteur de langue EN / FR dans l’en-tête.
+- Pages françaises : `content/pages/fr.mdx` (accueil) + `content/pages/fr/*.mdx`.
+- Navigation, pied de page, bouton de réservation et formulaire se localisent
+  automatiquement selon la locale de l’URL. Les libellés FR de la navigation se
+  règlent dans **Réglages du site → En-tête** (champ « Libellé (FR) »).
+- SEO : `<html lang>` synchronisé, balises `hreflang` (en / fr / x-default) et
+  `canonical` sur chaque page ; les pages FR sont dans le sitemap.
+- Pour ajouter une page bilingue : créez `content/pages/ma-page.mdx` **et**
+  `content/pages/fr/ma-page.mdx`, puis ajoutez l’entrée de menu (avec son
+  « Libellé (FR) ») — le href reste le slug EN, le préfixe `/fr` est automatique.
+
 ## Contenu & structure
 
 - `content/pages/*.mdx` — pages composées de **blocks** (Héro, À propos,

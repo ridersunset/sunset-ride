@@ -36,10 +36,12 @@ const Global: Collection = {
               required: true,
               description: 'Chemin interne (ex. /la-collection) ou URL complète.',
             },
-            { type: 'string', label: 'Libellé', name: 'label', required: true },
+            { type: 'string', label: 'Libellé (EN)', name: 'label', required: true },
+            { type: 'string', label: 'Libellé (FR)', name: 'labelFr', description: 'Traduction française du libellé. Utilisée sur les pages /fr.' },
           ],
         },
         linkField('cta', 'Bouton de réservation'),
+        { type: 'string', label: 'Bouton de réservation — libellé (FR)', name: 'ctaLabelFr', description: 'Traduction française du bouton (ex. « Réserver »).' },
       ],
     },
     // ── Footer ──────────────────────────────────────────────────────────
@@ -50,10 +52,17 @@ const Global: Collection = {
       fields: [
         {
           type: 'string',
-          label: 'Phrase de signature',
+          label: 'Phrase de signature (EN)',
           name: 'tagline',
           ui: { component: 'textarea' },
           description: 'Courte phrase sous le logo. Ex. « Des icônes, pas des voitures. »',
+        },
+        {
+          type: 'string',
+          label: 'Phrase de signature (FR)',
+          name: 'taglineFr',
+          ui: { component: 'textarea' },
+          description: 'Traduction française de la phrase de signature (pages /fr).',
         },
         {
           type: 'object',

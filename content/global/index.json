@@ -5,20 +5,22 @@
       "alt": "Sunset Ride — location de voitures de collection"
     },
     "nav": [
-      { "href": "/cars", "label": "The Collection" },
-      { "href": "/experiences", "label": "Experiences" },
-      { "href": "/weddings", "label": "Weddings" },
-      { "href": "/about", "label": "About us" },
-      { "href": "/contact", "label": "Contact" }
+      { "href": "/cars", "label": "The Collection", "labelFr": "La Collection" },
+      { "href": "/experiences", "label": "Experiences", "labelFr": "Expériences" },
+      { "href": "/weddings", "label": "Weddings", "labelFr": "Mariages" },
+      { "href": "/about", "label": "About us", "labelFr": "À propos" },
+      { "href": "/contact", "label": "Contact", "labelFr": "Contact" }
     ],
     "cta": {
       "label": "Book your ride",
       "href": "/contact",
       "newTab": false
-    }
+    },
+    "ctaLabelFr": "Réserver"
   },
   "footer": {
     "tagline": "Hand-restored icons for the French Riviera and the Basque Country. Icons, not just cars.",
+    "taglineFr": "Des icônes restaurées à la main, pour la Côte d’Azur et le Pays Basque. Des légendes, pas de simples voitures.",
     "social": [
       { "platform": "Instagram", "url": "https://www.instagram.com/_sunsetride/" },
       { "platform": "TikTok", "url": "https://www.tiktok.com/@_sunsetride" },

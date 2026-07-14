@@ -12,6 +12,10 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title: data.page.title,
       description: (data.page as any).description || undefined,
+      alternates: {
+        canonical: '/',
+        languages: { en: '/', fr: '/fr', 'x-default': '/' },
+      },
     };
   } catch {
     return {};

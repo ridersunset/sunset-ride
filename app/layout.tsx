@@ -2,16 +2,20 @@ import React from "react";
 import type { Metadata } from "next";
 import { heading, body, accent } from "./fonts";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { LangSync } from "@/components/LangSync";
 
 import "@/styles.css";
 
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://sunset-ride.com').replace(/\/$/, '');
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Sunset Ride — Location de voitures de collection | Côte d'Azur & Pays Basque",
+    default: "Sunset Ride — Classic Car Rental | French Riviera & Basque Country",
     template: "%s — Sunset Ride",
   },
   description:
-    "Location de voitures de collection sur la Côte d'Azur et au Pays Basque : road trips, mariages, shootings photo, rallyes. Nice & Biarritz.",
+    "Classic car rental on the French Riviera and the Basque Country: self-drive tours, weddings, photo shoots and rallies. Nice & Biarritz.",
 };
 
 // Anti-flash (pattern Edgard §8) : pose `reveal-on` sur <html> AVANT le 1er
@@ -26,7 +30,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="fr"
+      lang="en"
       data-style="luxe"
       className={`${heading.variable} ${body.variable} ${accent.variable}`}
       suppressHydrationWarning
@@ -37,6 +41,7 @@ export default function RootLayout({
       <body>
         {children}
         <ScrollReveal />
+        <LangSync />
       </body>
     </html>
   );
