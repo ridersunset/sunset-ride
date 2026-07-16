@@ -28,6 +28,6 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwindcss": "^4.1.15",
-    "tinacms": "^3.10.0"
+    "tinacms": "^3.11.0"
   }
 }
